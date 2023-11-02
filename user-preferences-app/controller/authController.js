@@ -8,8 +8,9 @@ const User = require('../models/UserPreference');
 
 exports.signIn = async (req, res) => {
     // Validate the user's credentials
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
+    username = username.toLowerCase().trim();
     const user = User.findOne({ username });
 
     if (!user) {
@@ -19,23 +20,22 @@ exports.signIn = async (req, res) => {
     // Validate the password using bcrypt
     const passwordMatch = await bcrypt.compare(password, user.password);
 
-    if (passwordMatch) {
-        // Generate a JWT token
-        const token = jwt.sign({ username }, process.env.JWT_SECRET_KEY, {
-            expiresIn: '1h', // Token expiration time
-        });
-
-        // Set the token in an HttpOnly cookie with Secure flag
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: true, // Set to true for HTTPS environments
-            sameSite: 'strict',
-        });
-
-        res.status(200).json({ message: 'Sign-in successful' });
-    } else {
+    if (!passwordMatch) {
         res.status(401).json({ message: 'Incorrect Password!' });
     }
+    // Generate a JWT token
+    const token = jwt.sign({ username }, process.env.JWT_SECRET_KEY, {
+        expiresIn: '1h', // Token expiration time
+    });
+
+    // Set the token in an HttpOnly cookie with Secure flag
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: true, // Set to true for HTTPS environments
+        sameSite: 'strict',
+    });
+
+    res.status(200).json({ message: 'Sign-in successful' });
 };
 
 exports.signup = async (req, res) => {

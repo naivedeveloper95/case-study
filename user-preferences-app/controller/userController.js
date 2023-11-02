@@ -1,9 +1,10 @@
 const User = require('../models/UserPreference'); // Import the User model
 
 exports.updateColorPreference = async (req, res) => {
-    const { username } = req.params;
+    let { username } = req.params;
     const { colorPreference } = req.body;
 
+    username = username.toLowerCase().trim();
     try {
         const user = await User.findOneAndUpdate(
             { username },
