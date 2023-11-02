@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const { connectToDatabase } = require('../database');
 
-async function startServer(app) {
+exports.startServer = async (app) => {
     try {
         await connectToDatabase();
         // Perform any operations that require the database connection here
@@ -14,6 +14,4 @@ async function startServer(app) {
     } catch (error) {
         console.error(error);
     }
-}
-
-module.exports = startServer;
+};

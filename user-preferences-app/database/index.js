@@ -2,11 +2,12 @@ require("dotenv").config();
 
 const mongoose = require('mongoose');
 
-function connectToDatabase() {
-    return new Promise((resolve, reject) => {
+// Export the connectToDatabase function
+exports.connectToDatabase = () => {
+    return new Promise(async (resolve, reject) => {
         const { connect, connection } = mongoose;
 
-        connect(process.env.MONGODB_URI);
+        await connect(process.env.MONGODB_URI);
 
         connection.on('error', (error) => {
             console.error('MongoDB connection error:', error);
@@ -16,9 +17,5 @@ function connectToDatabase() {
             console.log('Connected to MongoDB');
             resolve(connection); // Resolve the promise with the database connection
         });
-    });
-};
-
-module.exports = {
-    connectToDatabase, // Export the connectToDatabase function
+    }).catch(err => console.error(err));
 };
